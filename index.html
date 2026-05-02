@@ -1,10 +1,9 @@
-  <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="NFC pet tag profile for fast owner contact.">
-  <title>球球 - Pet Profile</title>
+  <title>Pet Profile</title>
   <style>
     :root {
       --bg: #fff8f1;
@@ -19,9 +18,7 @@
       --soft-blue: #e8f1ff;
       --soft-pink: #ffe9f3;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       min-height: 100vh;
@@ -32,7 +29,6 @@
       color: var(--text);
       background: linear-gradient(180deg, #fff8f1 0%, #fff2fb 100%);
     }
-
     .card {
       width: 100%;
       max-width: 380px;
@@ -42,7 +38,6 @@
       padding: 16px;
       box-shadow: 0 10px 28px rgba(255, 123, 84, 0.12);
     }
-
     .lost-banner {
       display: none;
       margin: 0 0 12px;
@@ -55,14 +50,12 @@
       font-weight: 700;
       text-align: center;
     }
-
     .header {
       display: flex;
       align-items: center;
       gap: 12px;
       margin-bottom: 14px;
     }
-
     .pet-photo {
       width: 72px;
       height: 72px;
@@ -72,19 +65,8 @@
       flex-shrink: 0;
       background: var(--soft-blue);
     }
-
-    h1 {
-      margin: 0;
-      font-size: 1.3rem;
-      line-height: 1.2;
-    }
-
-    .meta {
-      margin: 3px 0 0;
-      color: var(--muted);
-      font-size: 0.92rem;
-    }
-
+    h1 { margin: 0; font-size: 1.3rem; line-height: 1.2; }
+    .meta { margin: 3px 0 0; color: var(--muted); font-size: 0.92rem; }
     .status {
       display: inline-block;
       margin-top: 8px;
@@ -96,7 +78,6 @@
       color: var(--ok-text);
       border: 1px solid #c8f3de;
     }
-
     .info {
       margin: 0;
       padding: 12px;
@@ -104,26 +85,15 @@
       border-radius: 12px;
       background: linear-gradient(135deg, var(--soft-blue), var(--soft-pink));
     }
-
-    .info p {
-      margin: 0 0 8px;
-      font-size: 0.93rem;
-      color: var(--muted);
-    }
-
+    .info p { margin: 0 0 8px; font-size: 0.93rem; color: var(--muted); }
     .info p:last-child { margin-bottom: 0; }
-
     .info-row {
       display: flex;
       gap: 10px;
       align-items: stretch;
-      margin: 0 0 14px;
+      margin: 0 0 10px;
     }
-
-    .info-row .info {
-      flex: 1;
-    }
-
+    .info-row .info { flex: 1; }
     .sound-btn {
       width: 52px;
       min-width: 52px;
@@ -139,13 +109,8 @@
       box-shadow: 0 6px 14px rgba(255, 123, 84, 0.18);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-
-    .sound-btn:active {
-      transform: translateY(1px);
-      box-shadow: 0 3px 8px rgba(255, 123, 84, 0.2);
-    }
-
-    .phone {
+    .sound-btn:active { transform: translateY(1px); box-shadow: 0 3px 8px rgba(255, 123, 84, 0.2); }
+    .btn {
       display: block;
       width: 100%;
       border: 0;
@@ -158,27 +123,13 @@
       font-weight: 600;
       font-size: 1rem;
       box-shadow: 0 8px 18px rgba(255, 123, 84, 0.2);
+      margin-top: 8px;
     }
-
-    .phone:active {
-      background: var(--accent-press);
-    }
-
-    body.lost-mode .lost-banner {
-      display: block;
-    }
-
-    body.lost-mode .status {
-      background: #fff1f1;
-      color: #b42318;
-      border-color: #ffd1d1;
-    }
-
-    body.lost-mode .phone {
-      background: linear-gradient(180deg, #ff5f5f, #ef4444);
-      box-shadow: 0 8px 18px rgba(239, 68, 68, 0.25);
-    }
-
+    .btn.wa { background: linear-gradient(180deg, #25d366, #1da851); box-shadow: 0 8px 18px rgba(37,211,102,0.2); }
+    body.lost-mode .lost-banner { display: block; }
+    body.lost-mode .status { background: #fff1f1; color: #b42318; border-color: #ffd1d1; }
+    body.lost-mode .btn { background: linear-gradient(180deg, #ff5f5f, #ef4444); box-shadow: 0 8px 18px rgba(239,68,68,0.25); }
+    body.lost-mode .btn.wa { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
     @media (max-width: 360px) {
       .card { padding: 14px; }
       .pet-photo { width: 64px; height: 64px; }
@@ -187,62 +138,79 @@
   </style>
 </head>
 <body>
-  <main class="card" aria-label="NFC pet profile">
-    <p class="lost-banner" id="lostBanner">Lost Pet Alert: Please contact owner immediately.</p>
+<main class="card">
+  <p class="lost-banner" id="lostBanner">🆘 Lost Pet! Please contact owner immediately.</p>
+  <section class="header">
+    <img class="pet-photo" id="petPhoto" src="" alt="">
+    <div>
+      <h1 id="petName"></h1>
+      <p class="meta" id="petMeta"></p>
+      <span class="status" id="petStatus"></span>
+    </div>
+  </section>
+  <section class="info-row">
+    <div class="info">
+      <p id="petAllergy"></p>
+      <p id="petNotes"></p>
+      <p id="petOwner"></p>
+    </div>
+    <button class="sound-btn" type="button" onclick="playSound()">♪</button>
+  </section>
+  <a class="btn wa" id="waButton" href="#">💬 WhatsApp Owner</a>
+  <a class="btn" id="callButton" href="#">📞 Call Owner</a>
+</main>
 
-    <section class="header">
-      <img
-        class="pet-photo"
-        src="QIUQIU.jpeg"
-        alt="球球"
-      >
-      <div>
-        <h1>球球</h1>
-        <p class="meta">Male Cat • 2 Years • NFC ID: PET-1042</p>
-        <span class="status" id="petStatus">Vaccinated</span>
-      </div>
-    </section>
+<audio id="petSound" preload="auto"></audio>
 
-    <section class="info-row">
-      <div class="info">
-        <p><strong>Allergy:</strong> None known</p>
-        <p><strong>Notes:</strong> Friendly, indoor cat.</p>
-        <p><strong>Owner:</strong>Cherry Xin</p>
-      </div>
-      <button class="sound-btn" type="button" onclick="playSound()" aria-label="Play pet sound">
-        ♪
-      </button>
-    </section>
+<script>
+  // ==============================
+  // 只需要改这里 ↓
+  // ==============================
+  const PET = {
+    name: "球球",
+    species: "Cat",
+    gender: "Male",
+    age: "2 Years",
+    nfcId: "PET-1001",
+    allergy: "None known",
+    notes: "Friendly, indoor cat.",
+    owner: "Cherry Xin",
+    phone: "60197122902",
+    photo: "QIUQIU.jpeg",
+    sound: "QIUQIU.mp3",
+    vaccinated: true,
+  };
+  // ==============================
+  // 以下不需要改 ↑
+  // ==============================
 
-    <a class="phone" id="callButton" href="https://wa.me/+60197122902" aria-label="Contact owner on WhatsApp">
-       💬 WhatsApp Owner
-    </a>
-  </main>
+  document.getElementById("petName").textContent = PET.name;
+  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.age} • NFC ID: ${PET.nfcId}`;
+  document.getElementById("petStatus").textContent = PET.vaccinated ? "Vaccinated ✓" : "Not Vaccinated";
+  document.getElementById("petAllergy").innerHTML = `<strong>Allergy:</strong> ${PET.allergy}`;
+  document.getElementById("petNotes").innerHTML = `<strong>Notes:</strong> ${PET.notes}`;
+  document.getElementById("petOwner").innerHTML = `<strong>Owner:</strong> ${PET.owner}`;
+  document.getElementById("petPhoto").src = PET.photo;
+  document.getElementById("petPhoto").alt = PET.name;
+  document.getElementById("waButton").href = `https://wa.me/${PET.phone}`;
+  document.getElementById("callButton").href = `tel:+${PET.phone}`;
+  document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
 
-  <audio id="petSound" preload="auto">
-    <source src="QIUQIU.mp3" type="audio/mpeg">
-    Your browser does not support the audio element.
-  </audio>
+  function playSound() {
+    const s = document.getElementById("petSound");
+    s.currentTime = 0;
+    s.play().catch(() => alert("Tap again to play sound"));
+  }
 
-  <script>
-    function playSound() {
-      const sound = document.getElementById("petSound");
-      sound.currentTime = 0;
-      sound.play();
-    }
-
-    (function applyModeFromUrl() {
-      const params = new URLSearchParams(window.location.search);
-      const isLostMode = params.get("lost") === "true";
-      if (!isLostMode) return;
-
-      document.body.classList.add("lost-mode");
-      document.getElementById("petStatus").textContent = "Lost";
-      document.getElementById("callButton").textContent = "Urgent: Call Owner Now +60 19-7122902";
-      document.title = "球球 - LOST PET";
-    })();
-  </script>
+  (function applyLostMode() {
+    const isLost = new URLSearchParams(window.location.search).get("lost") === "true";
+    if (!isLost) return;
+    document.body.classList.add("lost-mode");
+    document.getElementById("petStatus").textContent = "⚠️ Lost";
+    document.getElementById("waButton").textContent = "🆘 Urgent: WhatsApp Owner Now";
+    document.getElementById("callButton").textContent = "🆘 Urgent: Call Owner Now";
+    document.title = PET.name + " - LOST PET";
+  })();
+</script>
 </body>
 </html>
-
-
