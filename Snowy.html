@@ -170,7 +170,7 @@
     name: "Snowy",
     species: "Cat",
     gender: "Female",
-    Born: "2023",
+    born: "2023",
     nfcId: "PET-TBC",
     allergy: "None",
     notes: " Indoor cat, Timid",
@@ -185,7 +185,7 @@
   // ==============================
 
   document.getElementById("petName").textContent = PET.name;
-  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.age} • NFC ID: ${PET.nfcId}`;
+  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.born} • NFC ID: ${PET.nfcId}`;
   document.getElementById("petStatus").textContent = PET.vaccinated ? "Vaccinated ✓" : "Not Vaccinated";
   document.getElementById("petAllergy").innerHTML = `<strong>Allergy:</strong> ${PET.allergy}`;
   document.getElementById("petNotes").innerHTML = `<strong>Notes:</strong> ${PET.notes}`;
