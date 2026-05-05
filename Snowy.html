@@ -109,7 +109,7 @@
       box-shadow: 0 6px 14px rgba(255, 123, 84, 0.18);
       transition: transform 0.15s ease, box-shadow 0.15s ease;
     }
-    .sound-btn:active { transform: translateY(1px); box-shadow: 0 3px 8px rgba(255, 123, 84, 0.2); }
+    .sound-btn:active { transform: translateY(1px); }
     .btn {
       display: block;
       width: 100%;
@@ -124,12 +124,32 @@
       font-size: 1rem;
       box-shadow: 0 8px 18px rgba(255, 123, 84, 0.2);
       margin-top: 8px;
+      cursor: pointer;
     }
     .btn.wa { background: linear-gradient(180deg, #25d366, #1da851); box-shadow: 0 8px 18px rgba(37,211,102,0.2); }
+    .btn.lost-on  { background: linear-gradient(180deg, #ff5f5f, #ef4444); box-shadow: 0 8px 18px rgba(239,68,68,0.25); }
+    .btn.lost-off { background: linear-gradient(180deg, #43b89c, #2d9e85); box-shadow: 0 8px 18px rgba(45,158,133,0.25); }
+
+    /* Owner panel - hidden by default */
+    .owner-panel {
+      display: none;
+      margin-top: 20px;
+      padding: 14px;
+      border: 1.5px dashed #ffb899;
+      border-radius: 14px;
+      background: #fff8f4;
+      text-align: center;
+    }
+    .owner-panel p {
+      margin: 0 0 10px;
+      font-size: 0.82rem;
+      color: var(--muted);
+    }
+
     body.lost-mode .lost-banner { display: block; }
     body.lost-mode .status { background: #fff1f1; color: #b42318; border-color: #ffd1d1; }
-    body.lost-mode .btn { background: linear-gradient(180deg, #ff5f5f, #ef4444); box-shadow: 0 8px 18px rgba(239,68,68,0.25); }
     body.lost-mode .btn.wa { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
+
     @media (max-width: 360px) {
       .card { padding: 14px; }
       .pet-photo { width: 64px; height: 64px; }
@@ -139,7 +159,8 @@
 </head>
 <body>
 <main class="card">
-  <p class="lost-banner" id="lostBanner">🆘 Lost Pet! Please contact owner immediately.</p>
+  <p class="lost-banner">🆘 Lost Pet! Please contact owner immediately.</p>
+
   <section class="header">
     <img class="pet-photo" id="petPhoto" src="" alt="">
     <div>
@@ -148,6 +169,7 @@
       <span class="status" id="petStatus"></span>
     </div>
   </section>
+
   <section class="info-row">
     <div class="info">
       <p id="petAllergy"></p>
@@ -156,16 +178,18 @@
     </div>
     <button class="sound-btn" type="button" onclick="playSound()">♪</button>
   </section>
+
   <a class="btn wa" id="waButton" href="#">💬 WhatsApp Owner</a>
   <a class="btn" id="callButton" href="#">📞 Call Owner</a>
-  <!-- Control Panel -->
-<div class="owner-panel" id="ownerPanel">
-  <p>🔑 Owner Control Panel</p>
-  <button class="btn lost-on" id="lostToggle" onclick="toggleLost()">
-    🔴 Activate Lost Mode
-  </button>
-  <p id="ownerHint"></p>
-</div>
+
+  <!-- 主人专属面板，普通人看不到 -->
+  <div class="owner-panel" id="ownerPanel">
+    <p>🔑 Owner Control Panel</p>
+    <button class="btn lost-on" id="lostToggle" onclick="toggleLost()">
+      🔴 Activate Lost Mode
+    </button>
+    <p id="ownerHint" style="margin-top:10px; font-size:0.78rem; color:#aaa;"></p>
+  </div>
 </main>
 
 <audio id="petSound" preload="auto"></audio>
@@ -175,26 +199,28 @@
   // 只需要改这里 ↓
   // ==============================
   const PET = {
-    name: "Snowy",
+    name: "球球",
     species: "Cat",
-    gender: "Female",
-    born: "2023",
-    nfcId: "PET-TBC",
-    allergy: "None",
-    notes: " Indoor cat, Timid",
-    owner: "Elsa Lee",
-    phone: "60139449931",
-    photo: "Snowly.jpeg",
-    sound: "Snowly.mp3",
+    gender: "Male",
+    age: "2 Years",
+    nfcId: "PET-1001",
+    allergy: "None known",
+    notes: "Friendly, indoor cat.",
+    owner: "Cherry Xin",
+    phone: "60197122902",
+    photo: "QIUQIU.jpeg",
+    sound: "QIUQIU.mp3",
     vaccinated: true,
   };
-  PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
   // ==============================
   // 以下不需要改 ↑
   // ==============================
 
+  PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
+
+  // 填入资料
   document.getElementById("petName").textContent = PET.name;
-  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.born} • NFC ID: ${PET.nfcId}`;
+  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.age} • NFC ID: ${PET.nfcId}`;
   document.getElementById("petStatus").textContent = PET.vaccinated ? "Vaccinated ✓" : "Not Vaccinated";
   document.getElementById("petAllergy").innerHTML = `<strong>Allergy:</strong> ${PET.allergy}`;
   document.getElementById("petNotes").innerHTML = `<strong>Notes:</strong> ${PET.notes}`;
@@ -205,13 +231,7 @@
   document.getElementById("callButton").href = `tel:+${PET.phone}`;
   document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
 
-  function playSound() {
-    const s = document.getElementById("petSound");
-    s.currentTime = 0;
-    s.play().catch(() => alert("Tap again to play sound"));
-  }
-
-const params = new URLSearchParams(window.location.search);
+  const params = new URLSearchParams(window.location.search);
   const isLost = params.get("lost") === "true";
   const isOwner = params.get("owner") === "true";
 
@@ -247,7 +267,11 @@ const params = new URLSearchParams(window.location.search);
     }
   }
 
-  })();
+  function playSound() {
+    const s = document.getElementById("petSound");
+    s.currentTime = 0;
+    s.play().catch(() => alert("Tap again to play sound"));
+  }
 </script>
 </body>
 </html>
