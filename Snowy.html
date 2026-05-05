@@ -107,7 +107,7 @@
       display: grid;
       place-items: center;
       box-shadow: 0 6px 14px rgba(255, 123, 84, 0.18);
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
+      transition: transform 0.15s ease;
     }
     .sound-btn:active { transform: translateY(1px); }
     .btn {
@@ -126,11 +126,9 @@
       margin-top: 8px;
       cursor: pointer;
     }
-    .btn.wa { background: linear-gradient(180deg, #25d366, #1da851); box-shadow: 0 8px 18px rgba(37,211,102,0.2); }
-    .btn.lost-on  { background: linear-gradient(180deg, #ff5f5f, #ef4444); box-shadow: 0 8px 18px rgba(239,68,68,0.25); }
-    .btn.lost-off { background: linear-gradient(180deg, #43b89c, #2d9e85); box-shadow: 0 8px 18px rgba(45,158,133,0.25); }
-
-    /* Owner panel - hidden by default */
+    .btn.wa { background: linear-gradient(180deg, #25d366, #1da851); }
+    .btn.lost-on { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
+    .btn.lost-off { background: linear-gradient(180deg, #43b89c, #2d9e85); }
     .owner-panel {
       display: none;
       margin-top: 20px;
@@ -140,16 +138,10 @@
       background: #fff8f4;
       text-align: center;
     }
-    .owner-panel p {
-      margin: 0 0 10px;
-      font-size: 0.82rem;
-      color: var(--muted);
-    }
-
+    .owner-panel p { margin: 0 0 10px; font-size: 0.82rem; color: var(--muted); }
     body.lost-mode .lost-banner { display: block; }
     body.lost-mode .status { background: #fff1f1; color: #b42318; border-color: #ffd1d1; }
     body.lost-mode .btn.wa { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
-
     @media (max-width: 360px) {
       .card { padding: 14px; }
       .pet-photo { width: 64px; height: 64px; }
@@ -160,7 +152,6 @@
 <body>
 <main class="card">
   <p class="lost-banner">🆘 Lost Pet! Please contact owner immediately.</p>
-
   <section class="header">
     <img class="pet-photo" id="petPhoto" src="" alt="">
     <div>
@@ -169,7 +160,6 @@
       <span class="status" id="petStatus"></span>
     </div>
   </section>
-
   <section class="info-row">
     <div class="info">
       <p id="petAllergy"></p>
@@ -178,23 +168,24 @@
     </div>
     <button class="sound-btn" type="button" onclick="playSound()">♪</button>
   </section>
-
   <a class="btn wa" id="waButton" href="#">💬 WhatsApp Owner</a>
   <a class="btn" id="callButton" href="#">📞 Call Owner</a>
-
-  <!-- 主人专属面板，普通人看不到 -->
   <div class="owner-panel" id="ownerPanel">
     <p>🔑 Owner Control Panel</p>
     <button class="btn lost-on" id="lostToggle" onclick="toggleLost()">
       🔴 Activate Lost Mode
     </button>
-    <p id="ownerHint" style="margin-top:10px; font-size:0.78rem; color:#aaa;"></p>
+    <p id="ownerHint" style="margin-top:10px;font-size:0.78rem;color:#aaa;">Loading...</p>
   </div>
 </main>
 
 <audio id="petSound" preload="auto"></audio>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
   // ==============================
   // 只需要改这里 ↓
   // ==============================
@@ -205,21 +196,33 @@
     born: "2023/1/2",
     nfcId: "PET-1001",
     allergy: "None",
-    notes: "Timid,Indoor cat.",
+    notes: "Timid, indoor cat.",
     owner: "Elsa Lee",
     phone: "60139449931",
     photo: "Snowly.jpeg",
     sound: "Snowly.mp3",
     vaccinated: true,
+    firestoreId: "Snowy",  // ← Firestore 文档ID，每个宠物不同
   };
-  PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
   // ==============================
   // 以下不需要改 ↑
   // ==============================
 
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMtqOGU-lNGqwOyb-IThZDEYsfGxZvjGA",
+    authDomain: "nfc-pet.firebaseapp.com",
+    projectId: "nfc-pet",
+    storageBucket: "nfc-pet.firebasestorage.app",
+    messagingSenderId: "1011472534348",
+    appId: "1:1011472534348:web:a37dcb246a113c77c51de9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
   PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
 
-  // 填入资料
+  // 填入基本资料
   document.getElementById("petName").textContent = PET.name;
   document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.born} • NFC ID: ${PET.nfcId}`;
   document.getElementById("petStatus").textContent = PET.vaccinated ? "Vaccinated ✓" : "Not Vaccinated";
@@ -232,47 +235,55 @@
   document.getElementById("callButton").href = `tel:+${PET.phone}`;
   document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
 
-  const params = new URLSearchParams(window.location.search);
-  const isLost = params.get("lost") === "true";
-  const isOwner = params.get("owner") === "true";
+  const isOwner = new URLSearchParams(window.location.search).get("owner") === "true";
+  if (isOwner) document.getElementById("ownerPanel").style.display = "block";
 
-  // Lost mode
-  if (isLost) {
-    document.body.classList.add("lost-mode");
-    document.getElementById("petStatus").textContent = "⚠️ Lost";
-    document.getElementById("waButton").textContent = "🆘 Urgent: WhatsApp Owner Now";
-    document.getElementById("callButton").textContent = "🆘 Urgent: Call Owner Now";
-    document.title = PET.name + " - LOST PET";
-  }
-
-  // Owner panel
-  if (isOwner) {
-    document.getElementById("ownerPanel").style.display = "block";
+  function applyLostMode(isLost) {
     if (isLost) {
-      document.getElementById("lostToggle").textContent = "✅ Deactivate Lost Mode";
-      document.getElementById("lostToggle").className = "btn lost-off";
-      document.getElementById("ownerHint").textContent = "Lost mode is currently ON";
-    } else {
-      document.getElementById("ownerHint").textContent = "Lost mode is currently OFF";
+      document.body.classList.add("lost-mode");
+      document.getElementById("petStatus").textContent = "⚠️ Lost";
+      document.getElementById("waButton").textContent = "🆘 Urgent: WhatsApp Owner Now";
+      document.getElementById("callButton").textContent = "🆘 Urgent: Call Owner Now";
+      document.title = PET.name + " - LOST PET";
+    }
+    if (isOwner) {
+      const btn = document.getElementById("lostToggle");
+      const hint = document.getElementById("ownerHint");
+      if (isLost) {
+        btn.textContent = "✅ Deactivate Lost Mode";
+        btn.className = "btn lost-off";
+        hint.textContent = "Lost mode is currently ON";
+      } else {
+        btn.textContent = "🔴 Activate Lost Mode";
+        btn.className = "btn lost-on";
+        hint.textContent = "Lost mode is currently OFF";
+      }
     }
   }
 
-  function toggleLost() {
-    const currentlyLost = params.get("lost") === "true";
-    if (currentlyLost) {
-      // 关掉 lost mode
-      window.location.href = window.location.pathname + "?owner=true";
-    } else {
-      // 开启 lost mode
-      window.location.href = window.location.pathname + "?owner=true&lost=true";
-    }
+  // 读取 Firebase lost 状态（没有就自动创建）
+  const ref = doc(db, "pets", PET.firestoreId);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, { lost: false });
+    applyLostMode(false);
+  } else {
+    applyLostMode(snap.data().lost);
   }
 
-  function playSound() {
+  // 主人切换 lost mode
+  window.toggleLost = async function() {
+    const latest = await getDoc(ref);
+    const current = latest.data().lost;
+    await updateDoc(ref, { lost: !current });
+    location.reload();
+  };
+
+  window.playSound = function() {
     const s = document.getElementById("petSound");
     s.currentTime = 0;
     s.play().catch(() => alert("Tap again to play sound"));
-  }
+  };
 </script>
 </body>
 </html>
