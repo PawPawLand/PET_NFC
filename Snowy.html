@@ -158,6 +158,14 @@
   </section>
   <a class="btn wa" id="waButton" href="#">💬 WhatsApp Owner</a>
   <a class="btn" id="callButton" href="#">📞 Call Owner</a>
+  <!-- Control Panel -->
+<div class="owner-panel" id="ownerPanel">
+  <p>🔑 Owner Control Panel</p>
+  <button class="btn lost-on" id="lostToggle" onclick="toggleLost()">
+    🔴 Activate Lost Mode
+  </button>
+  <p id="ownerHint"></p>
+</div>
 </main>
 
 <audio id="petSound" preload="auto"></audio>
@@ -203,14 +211,42 @@
     s.play().catch(() => alert("Tap again to play sound"));
   }
 
-  (function applyLostMode() {
-    const isLost = new URLSearchParams(window.location.search).get("lost") === "true";
-    if (!isLost) return;
+const params = new URLSearchParams(window.location.search);
+  const isLost = params.get("lost") === "true";
+  const isOwner = params.get("owner") === "true";
+
+  // Lost mode
+  if (isLost) {
     document.body.classList.add("lost-mode");
     document.getElementById("petStatus").textContent = "⚠️ Lost";
     document.getElementById("waButton").textContent = "🆘 Urgent: WhatsApp Owner Now";
     document.getElementById("callButton").textContent = "🆘 Urgent: Call Owner Now";
     document.title = PET.name + " - LOST PET";
+  }
+
+  // Owner panel
+  if (isOwner) {
+    document.getElementById("ownerPanel").style.display = "block";
+    if (isLost) {
+      document.getElementById("lostToggle").textContent = "✅ Deactivate Lost Mode";
+      document.getElementById("lostToggle").className = "btn lost-off";
+      document.getElementById("ownerHint").textContent = "Lost mode is currently ON";
+    } else {
+      document.getElementById("ownerHint").textContent = "Lost mode is currently OFF";
+    }
+  }
+
+  function toggleLost() {
+    const currentlyLost = params.get("lost") === "true";
+    if (currentlyLost) {
+      // 关掉 lost mode
+      window.location.href = window.location.pathname + "?owner=true";
+    } else {
+      // 开启 lost mode
+      window.location.href = window.location.pathname + "?owner=true&lost=true";
+    }
+  }
+
   })();
 </script>
 </body>
