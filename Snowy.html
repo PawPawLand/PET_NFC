@@ -199,19 +199,20 @@
   // 只需要改这里 ↓
   // ==============================
   const PET = {
-    name: "球球",
+    name: "Snowy",
     species: "Cat",
-    gender: "Male",
-    age: "2 Years",
+    gender: "Female",
+    born: "2023/1/2",
     nfcId: "PET-1001",
-    allergy: "None known",
-    notes: "Friendly, indoor cat.",
-    owner: "Cherry Xin",
-    phone: "60197122902",
-    photo: "QIUQIU.jpeg",
-    sound: "QIUQIU.mp3",
+    allergy: "None",
+    notes: "Timid,Indoor cat.",
+    owner: "Elsa Lee",
+    phone: "60139449931",
+    photo: "Snowly.jpeg",
+    sound: "Snowly.mp3",
     vaccinated: true,
   };
+  PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
   // ==============================
   // 以下不需要改 ↑
   // ==============================
@@ -220,7 +221,7 @@
 
   // 填入资料
   document.getElementById("petName").textContent = PET.name;
-  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.age} • NFC ID: ${PET.nfcId}`;
+  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.born} • NFC ID: ${PET.nfcId}`;
   document.getElementById("petStatus").textContent = PET.vaccinated ? "Vaccinated ✓" : "Not Vaccinated";
   document.getElementById("petAllergy").innerHTML = `<strong>Allergy:</strong> ${PET.allergy}`;
   document.getElementById("petNotes").innerHTML = `<strong>Notes:</strong> ${PET.notes}`;
