@@ -180,6 +180,7 @@
     sound: "Snowly.mp3",
     vaccinated: true,
   };
+  PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
   // ==============================
   // 以下不需要改 ↑
   // ==============================
@@ -192,7 +193,7 @@
   document.getElementById("petOwner").innerHTML = `<strong>Owner:</strong> ${PET.owner}`;
   document.getElementById("petPhoto").src = PET.photo;
   document.getElementById("petPhoto").alt = PET.name;
-  document.getElementById("waButton").href = `https://wa.me/${PET.phone}`;
+  document.getElementById("waButton").href = `https://wa.me/${PET.phone}?text=${encodeURIComponent(PET.waMessage)}`;
   document.getElementById("callButton").href = `tel:+${PET.phone}`;
   document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
 
