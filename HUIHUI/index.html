@@ -237,8 +237,19 @@
   document.getElementById("callButton").href = `tel:+${PET.phone}`;
   document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
 
-  const isOwner = new URLSearchParams(window.location.search).get("owner") === "true";
+const isOwner = new URLSearchParams(window.location.search).get("owner") === "true";
   if (isOwner) document.getElementById("ownerPanel").style.display = "block";
+
+  // 记录最后扫描位置
+  if (!isOwner && navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      await updateDoc(ref, {
+        lastSeenLat: pos.coords.latitude,
+        lastSeenLng: pos.coords.longitude,
+        lastSeenTime: new Date().toLocaleString("en-MY", {timeZone: "Asia/Kuala_Lumpur"}),
+      }).catch(() => {});
+    }, () => {});
+  }
 
   function applyLostMode(isLost) {
     if (isLost) {
