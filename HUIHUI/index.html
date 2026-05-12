@@ -172,12 +172,20 @@
   </section>
   <a class="btn wa" id="waButton" href="#">💬 WhatsApp Owner</a>
   <a class="btn" id="callButton" href="#">📞 Call Owner</a>
+  
   <div class="owner-panel" id="ownerPanel">
     <p>🔑 Owner Control Panel</p>
     <button class="btn lost-on" id="lostToggle" onclick="toggleLost()">
       🔴 Activate Lost Mode
     </button>
     <p id="ownerHint" style="margin-top:10px;font-size:0.78rem;color:#aaa;">Loading...</p>
+    <div id="lastSeenBox" style="display:none; margin-top:14px; padding:10px; background:#f0f9ff; border-radius:10px; font-size:0.82rem; color:#3d2f2f;">
+      <p style="margin:0 0 6px;font-weight:700;">📍 Last Seen Location</p>
+      <p id="lastSeenTime" style="margin:0 0 6px;color:#7a6870;"></p>
+      <a id="lastSeenMap" href="#" target="_blank" class="btn" style="margin-top:6px; font-size:0.85rem; padding:8px;">
+        🗺️ Open in Google Maps
+      </a>
+    </div>
   </div>
 </main>
 
@@ -291,6 +299,16 @@ const isOwner = new URLSearchParams(window.location.search).get("owner") === "tr
     await updateDoc(ref, { lost: !current });
     location.reload();
   };
+  // 主人查看最后位置
+  if (isOwner) {
+    const data = snap.data();
+    if (data.lastSeenLat) {
+      document.getElementById("lastSeenBox").style.display = "block";
+      document.getElementById("lastSeenTime").textContent = "🕐 " + data.lastSeenTime;
+      document.getElementById("lastSeenMap").href = 
+        `https://www.google.com/maps?q=${data.lastSeenLat},${data.lastSeenLng}`;
+    }
+  }
 
   window.playSound = function() {
     const s = document.getElementById("petSound");
