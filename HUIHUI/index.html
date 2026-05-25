@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,15 +22,27 @@
     body {
       margin: 0;
       min-height: 100vh;
-      display: grid;
-      place-items: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
       padding: 14px;
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
       color: var(--text);
       background: linear-gradient(180deg, #fff8f1 0%, #fff2fb 100%);
       background-image: url("https://media.tenor.com/a8PU8jt5l3IAAAAj/paws-paw.gif");
     }
-    
+    #logoBanner {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 14px;
+      width: 100%;
+      max-width: 380px;
+    }
+    #logoBanner img {
+      width: 180px;
+      object-fit: contain;
+    }
     .card {
       width: 100%;
       max-width: 380px;
@@ -153,6 +164,11 @@
   </style>
 </head>
 <body>
+
+<div id="logoBanner">
+  <img src="https://raw.githubusercontent.com/PawPawLand/PET_NFC/main/PAW%20PAW%20LAND_SEC%20LOGO.png" alt="Paw Paw Land">
+</div>
+
 <main class="card">
   <p class="lost-banner">🆘 Lost Pet! Please contact owner immediately.</p>
   <section class="header">
@@ -210,10 +226,10 @@
     notes: "Friendly, indoor cat.",
     owner: "Cherry Xin",
     phone: "60197122902",
-    photo: "HUIHUI.jpeg",
+    photo: "https://raw.githubusercontent.com/PawPawLand/PET_NFC/main/HUIHUI/HUIHUI.jpeg",
     sound: "HUIHUI.mp3",
-    vaccinated: false,
-    firestoreId: "HUIHUI",  // ← Firestore 文档ID，每个宠物不同
+    vaccinated: true,
+    firestoreId: "HUIHUI",
   };
   // ==============================
   // 以下不需要改 ↑
@@ -233,7 +249,6 @@
 
   PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
 
-  // 填入基本资料
   document.getElementById("petName").textContent = PET.name;
   document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.born} • NFC ID: ${PET.nfcId}`;
   document.getElementById("petStatus").textContent = PET.vaccinated ? "Vaccinated ✓" : "Not Vaccinated";
@@ -246,10 +261,14 @@
   document.getElementById("callButton").href = `tel:+${PET.phone}`;
   document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
 
-const isOwner = new URLSearchParams(window.location.search).get("owner") === "true";
-  if (isOwner) document.getElementById("ownerPanel").style.display = "block";
+  const isOwner = new URLSearchParams(window.location.search).get("owner") === "true";
+  if (isOwner) {
+    document.getElementById("ownerPanel").style.display = "block";
+    document.getElementById("logoBanner").style.display = "none";
+  }
 
-  // 记录最后扫描位置
+  const ref = doc(db, "pets", PET.firestoreId);
+
   if (!isOwner && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       await updateDoc(ref, {
@@ -283,8 +302,6 @@ const isOwner = new URLSearchParams(window.location.search).get("owner") === "tr
     }
   }
 
-  // 读取 Firebase lost 状态（没有就自动创建）
-  const ref = doc(db, "pets", PET.firestoreId);
   const snap = await getDoc(ref);
   if (!snap.exists()) {
     await setDoc(ref, { lost: false });
@@ -293,14 +310,13 @@ const isOwner = new URLSearchParams(window.location.search).get("owner") === "tr
     applyLostMode(snap.data().lost);
   }
 
-  // 主人切换 lost mode
   window.toggleLost = async function() {
     const latest = await getDoc(ref);
     const current = latest.data().lost;
     await updateDoc(ref, { lost: !current });
     location.reload();
   };
-  // 主人查看最后位置
+
   if (isOwner) {
     const data = snap.data();
     if (data.lastSeenLat) {
