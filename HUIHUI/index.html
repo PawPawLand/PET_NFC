@@ -249,7 +249,7 @@
   const app = initializeApp(firebaseConfig);
   const db = getFirestore(app);
 
-  PET.waMessage = `Hi, I found your lost cat ${PET.name}! How can I help you?`;
+  PET.waMessage = `Hi, I found your lost Pet ${PET.name}! How can I help you?`;
 
   document.getElementById("petName").textContent = PET.name;
   document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.born} • NFC ID: ${PET.nfcId}`;
