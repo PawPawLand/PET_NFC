@@ -165,8 +165,10 @@
 </head>
 <body>
 
+<!-- ✅ Logo 在 card 框架外正上方，owner 模式会隐藏 -->
 <div id="logoBanner">
-  <img src="https://raw.githubusercontent.com/PawPawLand/PET_NFC/main/PAW%20PAW%20LAND_SEC%20LOGO.png" alt="Paw Paw Land">
+  <img src="https://raw.githubusercontent.com/PawPawLand/PET_NFC/main/PAW%20PAW%20LAND_SEC%20LOGO.png" 
+       alt="Paw Paw Land">
 </div>
 
 <main class="card">
@@ -261,6 +263,7 @@
   document.getElementById("callButton").href = `tel:+${PET.phone}`;
   document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
 
+  // ✅ isOwner 判断：owner 模式隐藏 logo，显示控制面板
   const isOwner = new URLSearchParams(window.location.search).get("owner") === "true";
   if (isOwner) {
     document.getElementById("ownerPanel").style.display = "block";
@@ -269,6 +272,7 @@
 
   const ref = doc(db, "pets", PET.firestoreId);
 
+  // 记录最后扫描位置（只有非 owner 才记录）
   if (!isOwner && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       await updateDoc(ref, {
