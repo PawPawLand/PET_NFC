@@ -232,11 +232,11 @@
 
   if (!isOwner && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
-      await updateDoc(ref, {
-        lastSeenLat: pos.coords.latitude,
-        lastSeenLng: pos.coords.longitude,
-        lastSeenTime: new Date().toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur" }),
-      }).catch(() => {});
+     await setDoc(ref, {
+  lastSeenLat: pos.coords.latitude,
+  lastSeenLng: pos.coords.longitude,
+  lastSeenTime: new Date().toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur" }),
+}, { merge: true }).catch(() => {});
     }, () => {});
   }
 
