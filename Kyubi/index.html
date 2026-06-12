@@ -180,6 +180,9 @@
   import { getFirestore, doc, getDoc, setDoc, updateDoc }
     from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+  // ==============================
+  // 只需要改这里 ↓
+  // ==============================
   const PET = {
     name: "Kyubi",
     species: "Cat",
@@ -188,13 +191,16 @@
     nfcId: "PET-1004",
     allergy: "None",
     notes: "Shy, indoor cat.",
-    owner: "Hayley",
+    owner: "HAYLEY",
     phone: "60173358498",
     photo: "Kyubi.jpeg",
     sound: "Kyubi.mp3",
     vaccinated: true,
     firestoreId: "Kyubi",
   };
+  // ==============================
+  // 以下不需要改 ↑
+  // ==============================
 
   const firebaseConfig = {
     apiKey: "AIzaSyAMtqOGU-lNGqwOyb-IThZDEYsfGxZvjGA",
@@ -230,7 +236,7 @@
 
   const ref = doc(db, "pets", PET.firestoreId);
 
-if (!isOwner && navigator.geolocation) {
+  if (!isOwner && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
       await setDoc(ref, {
         lastSeenLat: pos.coords.latitude,
@@ -280,7 +286,6 @@ if (!isOwner && navigator.geolocation) {
     location.reload();
   };
 
-  // ✅ 修复：重新 getDoc 拿最新数据
   if (isOwner) {
     const freshSnap = await getDoc(ref);
     const data = freshSnap.data();
