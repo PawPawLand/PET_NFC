@@ -230,14 +230,16 @@
 
   const ref = doc(db, "pets", PET.firestoreId);
 
-  if (!isOwner && navigator.geolocation) {
+if (!isOwner && navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(async (pos) => {
-     await setDoc(ref, {
-  lastSeenLat: pos.coords.latitude,
-  lastSeenLng: pos.coords.longitude,
-  lastSeenTime: new Date().toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur" }),
-}, { merge: true }).catch(() => {});
-    }, () => {});
+      await setDoc(ref, {
+        lastSeenLat: pos.coords.latitude,
+        lastSeenLng: pos.coords.longitude,
+        lastSeenTime: new Date().toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur" }),
+      }, { merge: true }).catch(() => {});
+    }, (err) => {
+      console.warn("Location denied:", err.message);
+    });
   }
 
   function applyLostMode(isLost) {
