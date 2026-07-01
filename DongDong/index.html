@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pet Profile</title>
+  <style>
+    :root {
+      --bg: #fff8f1;
+      --card: #ffffff;
+      --text: #3d2f2f;
+      --muted: #7a6870;
+      --line: #ffe2cf;
+      --accent: #ff7b54;
+      --accent-press: #f2643f;
+      --ok-bg: #e8fff3;
+      --ok-text: #0c8c56;
+      --soft-blue: #e8f1ff;
+      --soft-pink: #ffe9f3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #fff8f1 0%, #fff2fb 100%);
+      background-image: url("https://media.tenor.com/a8PU8jt5l3IAAAAj/paws-paw.gif");
+    }
+    #logoBanner {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 14px;
+      width: 100%;
+      max-width: 380px;
+    }
+    #logoBanner img { width: 180px; object-fit: contain; }
+    .card {
+      width: 100%;
+      max-width: 380px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 10px 28px rgba(255, 123, 84, 0.12);
+    }
+    .lost-banner {
+      display: none;
+      margin: 0 0 12px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      border: 1px solid #ffd1d1;
+      background: #fff1f1;
+      color: #b42318;
+      font-size: 0.92rem;
+      font-weight: 700;
+      text-align: center;
+    }
+    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .pet-photo {
+      width: 72px; height: 72px;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      object-fit: cover;
+      flex-shrink: 0;
+      background: var(--soft-blue);
+    }
+    h1 { margin: 0; font-size: 1.3rem; line-height: 1.2; }
+    .meta { margin: 3px 0 0; color: var(--muted); font-size: 0.92rem; }
+    .status {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      background: var(--ok-bg);
+      color: var(--ok-text);
+      border: 1px solid #c8f3de;
+    }
+    .info {
+      margin: 0; padding: 12px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--soft-blue), var(--soft-pink));
+    }
+    .info p { margin: 0 0 8px; font-size: 0.93rem; color: var(--muted); }
+    .info p:last-child { margin-bottom: 0; }
+    .info-row { display: flex; gap: 10px; align-items: stretch; margin: 0 0 10px; }
+    .info-row .info { flex: 1; }
+    .sound-btn {
+      width: 52px; min-width: 52px;
+      border: 1px solid #ffd6c6;
+      border-radius: 12px;
+      background: linear-gradient(160deg, #fff3b0, #ffd6a5);
+      color: #9a4d00;
+      font-size: 1.2rem; font-weight: 700;
+      cursor: pointer;
+      display: grid; place-items: center;
+      box-shadow: 0 6px 14px rgba(255, 123, 84, 0.18);
+      transition: transform 0.15s ease;
+    }
+    .sound-btn:active { transform: translateY(1px); }
+    .btn {
+      display: block; width: 100%; border: 0;
+      border-radius: 12px; padding: 12px 14px;
+      background: linear-gradient(180deg, #ff8c66, var(--accent));
+      color: #fff; text-decoration: none; text-align: center;
+      font-weight: 600; font-size: 1rem;
+      box-shadow: 0 8px 18px rgba(255, 123, 84, 0.2);
+      margin-top: 8px; cursor: pointer;
+    }
+    .btn.wa { background: linear-gradient(180deg, #25d366, #1da851); }
+    .btn.lost-on { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
+    .btn.lost-off { background: linear-gradient(180deg, #43b89c, #2d9e85); }
+    .owner-panel {
+      display: none; margin-top: 20px; padding: 14px;
+      border: 1.5px dashed #ffb899; border-radius: 14px;
+      background: #fff8f4; text-align: center;
+    }
+    .owner-panel p { margin: 0 0 10px; font-size: 0.82rem; color: var(--muted); }
+    body.lost-mode .lost-banner { display: block; }
+    body.lost-mode .status { background: #fff1f1; color: #b42318; border-color: #ffd1d1; }
+    body.lost-mode .btn.wa { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
+    @media (max-width: 360px) {
+      .card { padding: 14px; }
+      .pet-photo { width: 64px; height: 64px; }
+      h1 { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="logoBanner">
+  <img src="https://raw.githubusercontent.com/PawPawLand/PET_NFC/main/PAW%20PAW%20LAND_SEC%20LOGO.png" alt="Paw Paw Land">
+</div>
+
+<main class="card">
+  <p class="lost-banner">🆘 Lost Pet! Please contact owner immediately.</p>
+  <section class="header">
+    <img class="pet-photo" id="petPhoto" src="" alt="">
+    <div>
+      <h1 id="petName"></h1>
+      <p class="meta" id="petMeta"></p>
+      <span class="status" id="petStatus"></span>
+    </div>
+  </section>
+  <section class="info-row">
+    <div class="info">
+      <p id="petAllergy"></p>
+      <p id="petNotes"></p>
+      <p id="petOwner"></p>
+    </div>
+    <button class="sound-btn" type="button" onclick="playSound()">♪</button>
+  </section>
+  <a class="btn wa" id="waButton" href="#">💬 WhatsApp Owner</a>
+  <a class="btn" id="callButton" href="#">📞 Call Owner</a>
+
+  <div class="owner-panel" id="ownerPanel">
+    <p>🔑 Owner Control Panel</p>
+    <button class="btn lost-on" id="lostToggle" onclick="toggleLost()">🔴 Activate Lost Mode</button>
+    <p id="ownerHint" style="margin-top:10px;font-size:0.78rem;color:#aaa;">Loading...</p>
+    <div id="lastSeenBox" style="display:none;margin-top:14px;padding:10px;background:#f0f9ff;border-radius:10px;font-size:0.82rem;color:#3d2f2f;">
+      <p style="margin:0 0 6px;font-weight:700;">📍 Last Seen Location</p>
+      <p id="lastSeenTime" style="margin:0 0 6px;color:#7a6870;"></p>
+      <a id="lastSeenMap" href="#" target="_blank" class="btn" style="margin-top:6px;font-size:0.85rem;padding:8px;">🗺️ Open in Google Maps</a>
+    </div>
+  </div>
+</main>
+
+<audio id="petSound" preload="auto"></audio>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, doc, getDoc, setDoc, updateDoc }
+    from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  // ==============================
+  // 只需要改这里 ↓
+  // ==============================
+  const PET = {
+    name: "Dong Dong",
+    species: "灰白",
+    gender: "Female",
+    born: "-",
+    nfcId: "PET-1036",
+    allergy: "None",
+    notes: "社牛,爱摸摸",
+    owner: "TEO SENG PENG",
+    phone: "60176029939",
+    photo: "DongDong.jpeg",
+    sound: "DongDong.mp3",
+    vaccinated: true,
+    firestoreId: "DongDong",
+  };
+  // ==============================
+  // 以下不需要改 ↑
+  // ==============================
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMtqOGU-lNGqwOyb-IThZDEYsfGxZvjGA",
+    authDomain: "nfc-pet.firebaseapp.com",
+    projectId: "nfc-pet",
+    storageBucket: "nfc-pet.firebasestorage.app",
+    messagingSenderId: "1011472534348",
+    appId: "1:1011472534348:web:a37dcb246a113c77c51de9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  PET.waMessage = `Hi, I found your lost Pet ${PET.name}! How can I help you?`;
+
+  document.getElementById("petName").textContent = PET.name;
+  document.getElementById("petMeta").textContent = `${PET.gender} ${PET.species} • ${PET.born} • NFC ID: ${PET.nfcId}`;
+  document.getElementById("petStatus").textContent = PET.vaccinated ? "Vaccinated ✓" : "Not Vaccinated";
+  document.getElementById("petAllergy").innerHTML = `<strong>Allergy:</strong> ${PET.allergy}`;
+  document.getElementById("petNotes").innerHTML = `<strong>Notes:</strong> ${PET.notes}`;
+  document.getElementById("petOwner").innerHTML = `<strong>Owner:</strong> ${PET.owner}`;
+  document.getElementById("petPhoto").src = PET.photo;
+  document.getElementById("petPhoto").alt = PET.name;
+  document.getElementById("waButton").href = `https://wa.me/${PET.phone}?text=${encodeURIComponent(PET.waMessage)}`;
+  document.getElementById("callButton").href = `tel:+${PET.phone}`;
+  document.getElementById("petSound").innerHTML = `<source src="${PET.sound}" type="audio/mpeg">`;
+
+  const isOwner = new URLSearchParams(window.location.search).get("owner") === "true";
+  if (isOwner) {
+    document.getElementById("ownerPanel").style.display = "block";
+    document.getElementById("logoBanner").style.display = "none";
+  }
+
+  const ref = doc(db, "pets", PET.firestoreId);
+
+  if (!isOwner && navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      await setDoc(ref, {
+        lastSeenLat: pos.coords.latitude,
+        lastSeenLng: pos.coords.longitude,
+        lastSeenTime: new Date().toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur" }),
+      }, { merge: true }).catch(() => {});
+    }, (err) => {
+      console.warn("Location denied:", err.message);
+    });
+  }
+
+  function applyLostMode(isLost) {
+    if (isLost) {
+      document.body.classList.add("lost-mode");
+      document.getElementById("petStatus").textContent = "⚠️ Lost";
+      document.getElementById("waButton").textContent = "🆘 Urgent: WhatsApp Owner Now";
+      document.getElementById("callButton").textContent = "🆘 Urgent: Call Owner Now";
+      document.title = PET.name + " - LOST PET";
+    }
+    if (isOwner) {
+      const btn = document.getElementById("lostToggle");
+      const hint = document.getElementById("ownerHint");
+      if (isLost) {
+        btn.textContent = "✅ Deactivate Lost Mode";
+        btn.className = "btn lost-off";
+        hint.textContent = "Lost mode is currently ON";
+      } else {
+        btn.textContent = "🔴 Activate Lost Mode";
+        btn.className = "btn lost-on";
+        hint.textContent = "Lost mode is currently OFF";
+      }
+    }
+  }
+
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    await setDoc(ref, { lost: false });
+    applyLostMode(false);
+  } else {
+    applyLostMode(snap.data().lost);
+  }
+
+  window.toggleLost = async function () {
+    const latest = await getDoc(ref);
+    const current = latest.data().lost;
+    await updateDoc(ref, { lost: !current });
+    location.reload();
+  };
+
+  if (isOwner) {
+    const freshSnap = await getDoc(ref);
+    const data = freshSnap.data();
+    if (data && data.lastSeenLat) {
+      document.getElementById("lastSeenBox").style.display = "block";
+      document.getElementById("lastSeenTime").textContent = "🕐 " + data.lastSeenTime;
+      document.getElementById("lastSeenMap").href =
+        `https://www.google.com/maps?q=${data.lastSeenLat},${data.lastSeenLng}`;
+    }
+  }
+
+  window.playSound = function () {
+    const s = document.getElementById("petSound");
+    s.currentTime = 0;
+    s.play().catch(() => alert("Tap again to play sound"));
+  };
+</script>
+</body>
+</html>
