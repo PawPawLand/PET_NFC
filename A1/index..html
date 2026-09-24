@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Pet Profile</title>
+  <style>
+    :root {
+      --bg: #fff8f1;
+      --card: #ffffff;
+      --text: #3d2f2f;
+      --muted: #7a6870;
+      --line: #ffe2cf;
+      --accent: #ff7b54;
+      --accent-press: #f2643f;
+      --ok-bg: #e8fff3;
+      --ok-text: #0c8c56;
+      --soft-blue: #e8f1ff;
+      --soft-pink: #ffe9f3;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 14px;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #fff8f1 0%, #fff2fb 100%);
+      background-image: url("https://media.tenor.com/a8PU8jt5l3IAAAAj/paws-paw.gif");
+    }
+    [hidden] { display: none !important; }
+    #logoBanner {
+      display: flex; justify-content: center;
+      margin-bottom: 14px; width: 100%; max-width: 380px;
+    }
+    #logoBanner img { width: 180px; object-fit: contain; }
+    .card {
+      width: 100%; max-width: 380px;
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 16px;
+      box-shadow: 0 10px 28px rgba(255, 123, 84, 0.12);
+    }
+    .lost-banner {
+      display: none;
+      margin: 0 0 12px; padding: 10px 12px;
+      border-radius: 12px; border: 1px solid #ffd1d1;
+      background: #fff1f1; color: #b42318;
+      font-size: 0.92rem; font-weight: 700; text-align: center;
+    }
+    .header { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+    .pet-photo {
+      width: 72px; height: 72px;
+      border-radius: 14px; border: 1px solid var(--line);
+      object-fit: cover; flex-shrink: 0; background: var(--soft-blue);
+    }
+    h1 { margin: 0; font-size: 1.3rem; line-height: 1.2; }
+    .meta { margin: 3px 0 0; color: var(--muted); font-size: 0.92rem; }
+    .status {
+      display: inline-block; margin-top: 8px; padding: 4px 9px;
+      border-radius: 999px; font-size: 0.78rem; font-weight: 600;
+      background: var(--ok-bg); color: var(--ok-text); border: 1px solid #c8f3de;
+    }
+    .info {
+      margin: 0; padding: 12px;
+      border: 1px solid var(--line); border-radius: 12px;
+      background: linear-gradient(135deg, var(--soft-blue), var(--soft-pink));
+    }
+    .info p { margin: 0 0 8px; font-size: 0.93rem; color: var(--muted); }
+    .info p:last-child { margin-bottom: 0; }
+    .info-row { display: flex; gap: 10px; align-items: stretch; margin: 0 0 10px; }
+    .info-row .info { flex: 1; }
+    .sound-btn {
+      width: 52px; min-width: 52px;
+      border: 1px solid #ffd6c6; border-radius: 12px;
+      background: linear-gradient(160deg, #fff3b0, #ffd6a5);
+      color: #9a4d00; font-size: 1.2rem; font-weight: 700;
+      cursor: pointer; display: grid; place-items: center;
+      box-shadow: 0 6px 14px rgba(255, 123, 84, 0.18);
+      transition: transform 0.15s ease;
+    }
+    .sound-btn:active { transform: translateY(1px); }
+    .btn {
+      display: block; width: 100%; border: 0;
+      border-radius: 12px; padding: 12px 14px;
+      background: linear-gradient(180deg, #ff8c66, var(--accent));
+      color: #fff; text-decoration: none; text-align: center;
+      font-weight: 600; font-size: 1rem; font-family: inherit;
+      box-shadow: 0 8px 18px rgba(255, 123, 84, 0.2);
+      margin-top: 8px; cursor: pointer;
+    }
+    .btn.wa { background: linear-gradient(180deg, #25d366, #1da851); }
+    .btn.lost-on { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
+    .btn.lost-off { background: linear-gradient(180deg, #43b89c, #2d9e85); }
+    .btn.plain {
+      background: #fff; color: var(--text); box-shadow: none;
+      border: 1px solid var(--line); font-size: 0.85rem; padding: 8px;
+    }
+    .notice {
+      margin: 10px 0 0; padding: 10px 12px; border-radius: 12px;
+      background: #f6f2ee; color: var(--muted); font-size: 0.85rem; text-align: center;
+    }
+    .share-box {
+      margin-top: 10px; padding: 12px; border-radius: 12px;
+      border: 1px solid #ffd1d1; background: #fff8f8; text-align: center;
+    }
+    .share-box p { margin: 0 0 6px; font-size: 0.85rem; color: var(--muted); }
+    .owner-link {
+      display: block; margin: 16px auto 0; background: none; border: 0;
+      color: var(--muted); font-size: 0.78rem; text-decoration: underline;
+      cursor: pointer; font-family: inherit;
+    }
+    .owner-panel {
+      margin-top: 14px; padding: 14px;
+      border: 1.5px dashed #ffb899; border-radius: 14px;
+      background: #fff8f4; text-align: center;
+    }
+    .owner-panel p { margin: 0 0 10px; font-size: 0.82rem; color: var(--muted); }
+    .owner-panel input[type="email"], .owner-panel input[type="password"] {
+      width: 100%; padding: 10px 12px; margin-bottom: 8px;
+      border: 1px solid var(--line); border-radius: 10px;
+      font-size: 1rem; font-family: inherit;
+    }
+    .check { display: flex; gap: 8px; align-items: flex-start; text-align: left;
+      font-size: 0.82rem; color: var(--muted); margin-top: 12px; }
+    .sightings {
+      margin-top: 14px; padding: 10px; background: #f0f9ff;
+      border-radius: 10px; font-size: 0.82rem; text-align: left;
+    }
+    .sightings p { margin: 0 0 6px; color: var(--text); }
+    .sightings .row { padding: 6px 0; border-top: 1px solid #dbeafe; }
+    .sightings a { color: #1d4ed8; }
+    .err { color: #b42318 !important; }
+    body.lost-mode .lost-banner { display: block; }
+    body.lost-mode .status { background: #fff1f1; color: #b42318; border-color: #ffd1d1; }
+    body.lost-mode .btn.wa { background: linear-gradient(180deg, #ff5f5f, #ef4444); }
+    @media (max-width: 360px) {
+      .card { padding: 14px; }
+      .pet-photo { width: 64px; height: 64px; }
+      h1 { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div id="logoBanner">
+  <a href="https://www.instagram.com/paw_paw_land?stkn=MThibHJ3bm80MzdrYg==" target="_blank" rel="noopener noreferrer">
+    <img src="https://raw.githubusercontent.com/PawPawLand/PET_NFC/main/PAW%20PAW%20LAND_SEC%20LOGO.png" alt="Paw Paw Land">
+  </a>
+</div>
+
+<!-- Tag not registered -->
+<main class="card" id="notFound" hidden>
+  <h1>Tag not found</h1>
+  <p class="notice">This tag is not registered yet. If you found it on a pet, please contact Paw Paw Land on Instagram.</p>
+</main>
+
+<main class="card" id="profile" hidden>
+  <p class="lost-banner" id="lostBanner">🆘 Lost Pet! Please contact owner immediately.</p>
+
+  <section class="header">
+    <img class="pet-photo" id="petPhoto" src="" alt="">
+    <div>
+      <h1 id="petName"></h1>
+      <p class="meta" id="petMeta"></p>
+      <span class="status" id="petStatus"></span>
+    </div>
+  </section>
+
+  <section class="info-row">
+    <div class="info">
+      <p id="petAllergy"></p>
+      <p id="petNotes"></p>
+      <p id="petOwner"></p>
+    </div>
+    <button class="sound-btn" id="soundBtn" type="button" aria-label="Play pet sound" hidden>♪</button>
+  </section>
+
+  <a class="btn wa" id="waButton" href="#" hidden>💬 WhatsApp Owner</a>
+  <a class="btn" id="callButton" href="#" hidden>📞 Call Owner</a>
+  <p class="notice" id="contactHidden" hidden>
+    The owner keeps contact details private unless the pet is marked lost.
+  </p>
+
+  <!-- Only shown when pet is in lost mode: finder chooses to share location -->
+  <div class="share-box" id="shareBox" hidden>
+    <p>Found me? Tap below to send your current location to my owner. Your browser will ask for permission first.</p>
+    <button class="btn lost-on" id="shareBtn" type="button">📍 Share my location with the owner</button>
+    <p id="shareMsg" style="margin-top:8px"></p>
+  </div>
+
+  <button class="owner-link" id="ownerToggle" type="button">Owner login</button>
+
+  <!-- Owner area -->
+  <div class="owner-panel" id="ownerPanel" hidden>
+    <div id="loginView">
+      <p>🔑 Owner login</p>
+      <input type="email" id="email" placeholder="Email" autocomplete="username">
+      <input type="password" id="password" placeholder="Password" autocomplete="current-password">
+      <button class="btn" id="loginBtn" type="button">Sign in</button>
+      <p id="loginMsg" style="margin-top:10px"></p>
+    </div>
+
+    <div id="controlView" hidden>
+      <p>🔑 Owner control panel</p>
+      <button class="btn lost-on" id="lostToggle" type="button">🔴 Activate Lost Mode</button>
+      <p id="ownerHint" style="margin-top:10px"></p>
+
+      <label class="check">
+        <input type="checkbox" id="contactPublic">
+        <span>Show my name and phone number on this page even when my pet is not lost</span>
+      </label>
+
+      <div class="sightings" id="sightingsBox" hidden>
+        <p><strong>📍 Latest locations shared by finders</strong></p>
+        <div id="sightingsList"></div>
+      </div>
+
+      <button class="btn plain" id="logoutBtn" type="button">Sign out</button>
+    </div>
+
+    <p id="wrongOwner" class="err" hidden>This account is not the owner of this pet.</p>
+  </div>
+</main>
+
+<audio id="petSound" preload="none"></audio>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import {
+    getFirestore, doc, getDoc, updateDoc, addDoc, collection,
+    query, orderBy, limit, getDocs, serverTimestamp
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+  import {
+    getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut
+  } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+  // Web API keys for Firebase are not secrets. Security comes from
+  // firestore.rules + Authentication. Restrict the key by HTTP referrer
+  // in Google Cloud Console (see setup notes).
+  const firebaseConfig = {
+    apiKey: "AIzaSyAMtqOGU-lNGqwOyb-IThZDEYsfGxZvjGA",
+    authDomain: "nfc-pet.firebaseapp.com",
+    projectId: "nfc-pet",
+    storageBucket: "nfc-pet.firebasestorage.app",
+    messagingSenderId: "1011472534348",
+    appId: "1:1011472534348:web:a37dcb246a113c77c51de9"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+  const auth = getAuth(app);
+
+  const $ = (id) => document.getElementById(id);
+
+  // Pet ID comes from the tag URL: pet.html?id=HUIHUI
+  const petId = (new URLSearchParams(location.search).get("id") || "").trim();
+  const validId = /^[A-Za-z0-9_-]{1,64}$/.test(petId);
+
+  let pet = null;
+  let contact = null;
+  let user = null;
+  let ownerPanelOpen = false;
+
+  const digits = (s) => String(s || "").replace(/\D/g, "");
+
+  // Safe "Label: value" line (no innerHTML, so no script injection)
+  function setLine(el, label, value) {
+    el.replaceChildren();
+    const b = document.createElement("strong");
+    b.textContent = label + ": ";
+    el.appendChild(b);
+    el.appendChild(document.createTextNode(value || "-"));
+  }
+
+  function safeUrl(u) {
+    // Only allow relative files or https images
+    if (!u) return "";
+    const s = String(u);
+    if (/^https:\/\//i.test(s)) return s;
+    if (/^[\w./-]+$/.test(s)) return s;
+    return "";
+  }
+
+  async function loadPet() {
+    const snap = await getDoc(doc(db, "pets", petId));
+    if (!snap.exists()) { pet = null; return; }
+    pet = snap.data();
+    contact = null;
+    try {
+      const c = await getDoc(doc(db, "pets", petId, "private", "contact"));
+      if (c.exists()) contact = c.data();
+    } catch (e) {
+      contact = null; // blocked by rules: owner keeps contact private
+    }
+  }
+
+  function render() {
+    $("profile").hidden = false;
+    $("petName").textContent = pet.name || "";
+    const parts = [
+      [pet.gender, pet.species].filter(Boolean).join(" "),
+      pet.breed, pet.born, pet.nfcId ? "NFC ID: " + pet.nfcId : ""
+    ].filter(Boolean);
+    $("petMeta").textContent = parts.join(" • ");
+    $("petPhoto").src = safeUrl(pet.photo);
+    $("petPhoto").alt = pet.name || "Pet";
+
+    setLine($("petAllergy"), "Allergy", pet.allergy);
+    setLine($("petNotes"), "Personality", pet.notes);
+    setLine($("petOwner"), "Owner", contact ? contact.ownerName : "Private");
+
+    const isLost = pet.lost === true;
+    document.body.classList.toggle("lost-mode", isLost);
+    $("petStatus").textContent = isLost
+      ? "⚠️ Lost"
+      : (pet.vaccinated ? "Vaccinated ✓" : "Not Vaccinated");
+    document.title = isLost ? `${pet.name} - LOST PET` : `${pet.name} - Pet Profile`;
+
+    // Contact buttons
+    const phone = contact ? digits(contact.phone) : "";
+    const hasContact = phone.length >= 8;
+    $("waButton").hidden = !hasContact;
+    $("callButton").hidden = !hasContact;
+    $("contactHidden").hidden = hasContact;
+    if (hasContact) {
+      const msg = `Hi, I found your lost Pet ${pet.name}! How can I help you?`;
+      $("waButton").href = `https://wa.me/${phone}?text=${encodeURIComponent(msg)}`;
+      $("callButton").href = `tel:+${phone}`;
+      $("waButton").textContent = isLost ? "🆘 Urgent: WhatsApp Owner Now" : "💬 WhatsApp Owner";
+      $("callButton").textContent = isLost ? "🆘 Urgent: Call Owner Now" : "📞 Call Owner";
+    }
+
+    // Sound
+    const snd = safeUrl(pet.sound);
+    $("soundBtn").hidden = !snd;
+    if (snd) $("petSound").src = snd;
+
+    // Finder location sharing (only in lost mode)
+    $("shareBox").hidden = !isLost;
+
+    renderOwner();
+  }
+
+  // ---------- Finder shares location (consent + lost mode only) ----------
+  $("shareBtn").addEventListener("click", () => {
+    const msg = $("shareMsg");
+    msg.classList.remove("err");
+    if (!navigator.geolocation) {
+      msg.textContent = "Your browser cannot share location."; msg.classList.add("err"); return;
+    }
+    msg.textContent = "Getting location…";
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      try {
+        await addDoc(collection(db, "pets", petId, "sightings"), {
+          lat: pos.coords.latitude,
+          lng: pos.coords.longitude,
+          at: serverTimestamp()
+        });
+        msg.textContent = "Thank you! The owner can now see where you found me.";
+      } catch (e) {
+        msg.textContent = "Could not send location. Please contact the owner directly.";
+        msg.classList.add("err");
+      }
+    }, () => {
+      msg.textContent = "Location permission was not given.";
+      msg.classList.add("err");
+    }, { enableHighAccuracy: true, timeout: 15000 });
+  });
+
+  // ---------- Sound ----------
+  $("soundBtn").addEventListener("click", () => {
+    const s = $("petSound");
+    s.currentTime = 0;
+    s.play().catch(() => alert("Tap again to play sound"));
+  });
+
+  // ---------- Owner area ----------
+  const isThisOwner = () => user && pet && pet.ownerUid === user.uid;
+
+  $("ownerToggle").addEventListener("click", () => {
+    ownerPanelOpen = !ownerPanelOpen;
+    renderOwner();
+  });
+
+  function renderOwner() {
+    if (!pet) return;
+    $("ownerPanel").hidden = !ownerPanelOpen;
+    $("ownerToggle").textContent = ownerPanelOpen ? "Close owner login" : "Owner login";
+    if (!ownerPanelOpen) return;
+
+    const signedIn = !!user;
+    const owner = isThisOwner();
+    $("loginView").hidden = signedIn;
+    $("controlView").hidden = !owner;
+    $("wrongOwner").hidden = !(signedIn && !owner);
+
+    if (owner) {
+      const isLost = pet.lost === true;
+      const btn = $("lostToggle");
+      btn.textContent = isLost ? "✅ Deactivate Lost Mode" : "🔴 Activate Lost Mode";
+      btn.className = "btn " + (isLost ? "lost-off" : "lost-on");
+      $("ownerHint").textContent = isLost ? "Lost mode is currently ON" : "Lost mode is currently OFF";
+      $("contactPublic").checked = pet.contactPublic === true;
+      loadSightings();
+    }
+  }
+
+  $("loginBtn").addEventListener("click", async () => {
+    const msg = $("loginMsg");
+    msg.classList.remove("err");
+    msg.textContent = "Signing in…";
+    try {
+      await signInWithEmailAndPassword(auth, $("email").value.trim(), $("password").value);
+      msg.textContent = "";
+      $("password").value = "";
+    } catch (e) {
+      msg.textContent = "Email or password is incorrect.";
+      msg.classList.add("err");
+    }
+  });
+
+  $("logoutBtn").addEventListener("click", () => signOut(auth));
+
+  $("lostToggle").addEventListener("click", async () => {
+    const btn = $("lostToggle");
+    btn.disabled = true;
+    try {
+      await updateDoc(doc(db, "pets", petId), { lost: !(pet.lost === true) });
+      await loadPet();
+      render();
+    } catch (e) {
+      $("ownerHint").textContent = "Could not update. Please try again.";
+      $("ownerHint").classList.add("err");
+    }
+    btn.disabled = false;
+  });
+
+  $("contactPublic").addEventListener("change", async (ev) => {
+    try {
+      await updateDoc(doc(db, "pets", petId), { contactPublic: ev.target.checked });
+      await loadPet();
+      render();
+    } catch (e) {
+      ev.target.checked = !ev.target.checked;
+    }
+  });
+
+  async function loadSightings() {
+    const list = $("sightingsList");
+    try {
+      const q = query(collection(db, "pets", petId, "sightings"), orderBy("at", "desc"), limit(5));
+      const snap = await getDocs(q);
+      list.replaceChildren();
+      if (snap.empty) { $("sightingsBox").hidden = true; return; }
+      $("sightingsBox").hidden = false;
+      snap.forEach((d) => {
+        const s = d.data();
+        const lat = Number(s.lat), lng = Number(s.lng);
+        const row = document.createElement("div");
+        row.className = "row";
+        const when = s.at && s.at.toDate
+          ? s.at.toDate().toLocaleString("en-MY", { timeZone: "Asia/Kuala_Lumpur" })
+          : "";
+        row.appendChild(document.createTextNode("🕐 " + when + "  "));
+        const a = document.createElement("a");
+        a.href = `https://www.google.com/maps?q=${lat},${lng}`;
+        a.target = "_blank";
+        a.rel = "noopener noreferrer";
+        a.textContent = "🗺️ Open in Google Maps";
+        row.appendChild(a);
+        list.appendChild(row);
+      });
+    } catch (e) {
+      $("sightingsBox").hidden = true;
+    }
+  }
+
+  onAuthStateChanged(auth, (u) => { user = u; renderOwner(); });
+
+  // ---------- Start ----------
+  if (!validId) {
+    $("notFound").hidden = false;
+  } else {
+    try {
+      await loadPet();
+      if (!pet) $("notFound").hidden = false;
+      else render();
+    } catch (e) {
+      $("notFound").hidden = false;
+    }
+  }
+</script>
+</body>
+</html>
